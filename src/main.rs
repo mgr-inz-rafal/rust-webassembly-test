@@ -22,7 +22,6 @@ impl Ball {
 }
 
 struct View {
-    canvas: CanvasElement,
     context: CanvasRenderingContext2d,
     dimension: (u32, u32),
 }
@@ -39,7 +38,6 @@ impl View {
         let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
         View {
-            canvas,
             context,
             dimension: (width, height),
         }
