@@ -8,6 +8,8 @@ use stdweb::web::document;
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::CanvasRenderingContext2d;
 
+const GRAVITY_DRAG: f64 = 0.2;
+
 struct Ball {
     pos: (f64, f64),
     radius: u32,
@@ -17,6 +19,7 @@ struct Ball {
 impl Ball {
     fn tick(&mut self) {
         self.pos.1 += self.acceleration.1;
+        self.acceleration.1 += GRAVITY_DRAG;
         js! { console.log( "Updating ball pos to: ", @{self.pos.1} ) }
     }
 }
@@ -78,7 +81,7 @@ fn main() {
     let ball = Ball {
         pos: (f64::from(W / 2), f64::from(H)),
         radius: 50,
-        acceleration: (0.0, -1.0),
+        acceleration: (0.0, -15.0),
     };
 
     fn game_loop(mut ball: Ball, view: View) {
