@@ -12,6 +12,7 @@ const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 const GRAVITY_DRAG: f64 = 0.2;
 const BALL_RADIUS: u32 = 50;
+const FALL_OFFSCREEN: u32 = SCREEN_HEIGHT + BALL_RADIUS;
 
 struct Ball {
     pos: (f64, f64),
@@ -20,20 +21,24 @@ struct Ball {
 }
 
 impl Ball {
-    fn tick(&mut self) {
+    fn tick(&mut self) -> bool {
         self.pos.1 += self.acceleration.1;
+        //        js! { console.log( "Updating ball pos to: ", @{self.pos.1} ) }
+
         self.acceleration.1 += GRAVITY_DRAG;
-        js! { console.log( "Updating ball pos to: ", @{self.pos.1} ) }
+
+        if self.pos.1 > f64::from(FALL_OFFSCREEN) {
+            true
+        } else {
+            false
+        }
     }
 }
 
 impl Default for Ball {
     fn default() -> Ball {
         Ball {
-            pos: (
-                f64::from(SCREEN_WIDTH / 2),
-                f64::from(SCREEN_HEIGHT + BALL_RADIUS),
-            ),
+            pos: (f64::from(SCREEN_WIDTH / 2), f64::from(FALL_OFFSCREEN)),
             radius: BALL_RADIUS,
             acceleration: (0.0, -15.0),
         }
@@ -96,7 +101,10 @@ fn main() {
     fn game_loop(mut ball: Ball, view: View) {
         stdweb::web::set_timeout(
             move || {
-                ball.tick();
+                if ball.tick() == true {
+                    js! { console.log( "Bounce!" ) }
+                    ball = Ball::default();
+                }
                 view.clear();
                 view.paint(&ball);
                 game_loop(ball, view);
