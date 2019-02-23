@@ -6,14 +6,19 @@ use stdweb::web::document;
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::CanvasRenderingContext2d;
 
-pub struct View {
+struct Ball {
+    pos: (u32, u32),
+    radius: u32,
+}
+
+struct View {
     canvas: CanvasElement,
     context: CanvasRenderingContext2d,
     dimension: (u32, u32),
 }
 
 impl View {
-    pub fn new(width: u32, height: u32) -> View {
+    fn new(width: u32, height: u32) -> View {
         let canvas: CanvasElement = document()
             .query_selector("#can")
             .unwrap()
@@ -30,9 +35,19 @@ impl View {
         }
     }
 
-    pub fn paint(&self) {
-        self.context.set_fill_style_color("blue");
-        self.context.fill_rect(100.0, 100.0, 200.0, 200.0);
+    fn paint(&self, ball: &Ball) {
+        self.context.set_fill_style_color("rgb(0,255,0)");
+
+        self.context.begin_path();
+        self.context.arc(
+            f64::from(ball.pos.0),
+            f64::from(ball.pos.1),
+            f64::from(ball.radius),
+            0.0,
+            f64::from(2.0 * 3.14),
+            false,
+        );
+        self.context.fill(stdweb::web::FillRule::default());
     }
 
     fn clear(&self) {
@@ -47,11 +62,19 @@ impl View {
 }
 
 fn main() {
+    const W: u32 = 800;
+    const H: u32 = 600;
+
     stdweb::initialize();
 
-    let v = View::new(800, 600);
+    let ball = Ball {
+        pos: (W / 2, H),
+        radius: 50,
+    };
+
+    let v = View::new(H, W);
     v.clear();
-    v.paint();
+    v.paint(&ball);
 
     stdweb::event_loop();
 }
