@@ -18,6 +18,7 @@ struct Ball {
     pos: (f64, f64),
     radius: u32,
     acceleration: (f64, f64),
+    color_str: String,
 }
 
 impl Ball {
@@ -35,12 +36,25 @@ impl Ball {
     }
 }
 
+fn get_random_u8() -> u8 {
+    let value: u8 = js! { return Math.floor(Math.random() * @{std::u8::MAX}) }
+        .try_into()
+        .unwrap();
+    u8::from(value)
+}
+
 impl Default for Ball {
     fn default() -> Ball {
         Ball {
             pos: (f64::from(SCREEN_WIDTH / 2), f64::from(FALL_OFFSCREEN)),
             radius: BALL_RADIUS,
             acceleration: (0.0, -15.0),
+            color_str: format!(
+                "rgb({},{},{})",
+                get_random_u8(),
+                get_random_u8(),
+                get_random_u8()
+            ),
         }
     }
 }
@@ -68,7 +82,7 @@ impl View {
     }
 
     fn paint(&self, ball: &Ball) {
-        self.context.set_fill_style_color("rgb(0,255,0)");
+        self.context.set_fill_style_color(&ball.color_str);
 
         self.context.begin_path();
         self.context.arc(
