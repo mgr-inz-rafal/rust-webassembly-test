@@ -117,7 +117,9 @@ fn main() {
             move || {
                 if ball.tick() == true {
                     js! { console.log( "Bounce!" ) }
+                    let old_color = ball.color_str;
                     ball = Ball::default();
+                    ball.color_str = old_color;
                 }
                 view.clear();
                 view.paint(&ball);
