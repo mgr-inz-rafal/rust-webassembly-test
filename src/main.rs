@@ -1,5 +1,7 @@
+#[macro_use]
 extern crate stdweb;
 
+use stdweb::js;
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
 use stdweb::web::document;
@@ -10,6 +12,13 @@ struct Ball {
     pos: (f64, f64),
     radius: u32,
     acceleration: (f64, f64),
+}
+
+impl Ball {
+    fn tick(&mut self) {
+        self.pos.1 += self.acceleration.1;
+        js! { console.log( "Updating ball pos to: ", @{self.pos.1} ) }
+    }
 }
 
 struct View {
@@ -71,12 +80,24 @@ fn main() {
     let ball = Ball {
         pos: (f64::from(W / 2), f64::from(H)),
         radius: 50,
-        acceleration: (0.0, -0.01),
+        acceleration: (0.0, -1.0),
     };
 
+    fn game_loop(mut ball: Ball, view: View) {
+        stdweb::web::set_timeout(
+            move || {
+                ball.tick();
+                view.clear();
+                view.paint(&ball);
+                game_loop(ball, view);
+            },
+            16,
+        );
+    }
+
     let v = View::new(H, W);
-    v.clear();
-    v.paint(&ball);
+
+    game_loop(ball, v);
 
     stdweb::event_loop();
 }
