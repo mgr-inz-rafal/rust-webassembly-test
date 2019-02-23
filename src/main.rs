@@ -8,7 +8,10 @@ use stdweb::web::document;
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::CanvasRenderingContext2d;
 
+const SCREEN_WIDTH: u32 = 800;
+const SCREEN_HEIGHT: u32 = 600;
 const GRAVITY_DRAG: f64 = 0.2;
+const BALL_RADIUS: u32 = 50;
 
 struct Ball {
     pos: (f64, f64),
@@ -21,6 +24,19 @@ impl Ball {
         self.pos.1 += self.acceleration.1;
         self.acceleration.1 += GRAVITY_DRAG;
         js! { console.log( "Updating ball pos to: ", @{self.pos.1} ) }
+    }
+}
+
+impl Default for Ball {
+    fn default() -> Ball {
+        Ball {
+            pos: (
+                f64::from(SCREEN_WIDTH / 2),
+                f64::from(SCREEN_HEIGHT + BALL_RADIUS),
+            ),
+            radius: BALL_RADIUS,
+            acceleration: (0.0, -15.0),
+        }
     }
 }
 
@@ -73,16 +89,9 @@ impl View {
 }
 
 fn main() {
-    const W: u32 = 800;
-    const H: u32 = 600;
-
     stdweb::initialize();
 
-    let ball = Ball {
-        pos: (f64::from(W / 2), f64::from(H)),
-        radius: 50,
-        acceleration: (0.0, -15.0),
-    };
+    let ball = Ball::default();
 
     fn game_loop(mut ball: Ball, view: View) {
         stdweb::web::set_timeout(
@@ -96,7 +105,7 @@ fn main() {
         );
     }
 
-    let v = View::new(H, W);
+    let v = View::new(SCREEN_HEIGHT, SCREEN_WIDTH);
 
     game_loop(ball, v);
 
