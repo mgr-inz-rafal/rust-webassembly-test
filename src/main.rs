@@ -7,8 +7,9 @@ use stdweb::web::html_element::CanvasElement;
 use stdweb::web::CanvasRenderingContext2d;
 
 struct Ball {
-    pos: (u32, u32),
+    pos: (f64, f64),
     radius: u32,
+    acceleration: (f64, f64),
 }
 
 struct View {
@@ -40,8 +41,8 @@ impl View {
 
         self.context.begin_path();
         self.context.arc(
-            f64::from(ball.pos.0),
-            f64::from(ball.pos.1),
+            ball.pos.0,
+            ball.pos.1,
             f64::from(ball.radius),
             0.0,
             f64::from(2.0 * 3.14),
@@ -68,8 +69,9 @@ fn main() {
     stdweb::initialize();
 
     let ball = Ball {
-        pos: (W / 2, H),
+        pos: (f64::from(W / 2), f64::from(H)),
         radius: 50,
+        acceleration: (0.0, -0.01),
     };
 
     let v = View::new(H, W);
