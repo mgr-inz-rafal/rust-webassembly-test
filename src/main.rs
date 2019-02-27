@@ -34,6 +34,11 @@ impl Ball {
             false
         }
     }
+
+    fn reset(&mut self) {
+        self.pos.1 = f64::from(FALL_OFFSCREEN);
+        self.acceleration.1 = -15.0;
+    }
 }
 
 fn get_random_u8() -> u8 {
@@ -110,20 +115,25 @@ impl View {
 fn main() {
     stdweb::initialize();
 
-    let ball = Ball::default();
+    let mut ball: [Ball; 2] = [Ball::default(), Ball::default()];
+    ball[0].pos = (
+        f64::from(SCREEN_WIDTH / 2) - 100.0,
+        f64::from(FALL_OFFSCREEN),
+    );
 
-    fn game_loop(mut ball: Ball, view: View) {
+    fn game_loop(mut balls: [Ball; 2], view: View) {
         stdweb::web::set_timeout(
             move || {
-                if ball.tick() == true {
-                    js! { console.log( "Bounce!" ) }
-                    let old_color = ball.color_str;
-                    ball = Ball::default();
-                    ball.color_str = old_color;
+                for ball in &mut balls {
+                    if ball.tick() == true {
+                        js! { console.log( "Bounce!" ) }
+                        ball.reset();
+                    }
                 }
                 view.clear();
-                view.paint(&ball);
-                game_loop(ball, view);
+                view.paint(&balls[0]);
+                view.paint(&balls[1]);
+                game_loop(balls, view);
             },
             16,
         );
