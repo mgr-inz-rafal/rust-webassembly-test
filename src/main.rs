@@ -51,7 +51,7 @@ fn get_random_upto(max: u32) -> u32 {
 }
 
 fn get_random_acceleration() -> f64 {
-    MAX_ACCELERATION + f64::from(get_random_upto((MAX_ACCELERATION / -1.7) as u32))
+    MAX_ACCELERATION + f64::from(get_random_upto((MAX_ACCELERATION / -1.3) as u32))
 }
 
 fn get_random_radius() -> u32 {
