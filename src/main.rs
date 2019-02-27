@@ -13,6 +13,7 @@ const SCREEN_HEIGHT: u32 = 600;
 const GRAVITY_DRAG: f64 = 0.2;
 const BALL_RADIUS: u32 = 50;
 const FALL_OFFSCREEN: u32 = SCREEN_HEIGHT + BALL_RADIUS;
+const MAX_ACCELERATION: f64 = -15.0;
 
 struct Ball {
     pos: (f64, f64),
@@ -37,7 +38,7 @@ impl Ball {
 
     fn reset(&mut self) {
         self.pos.1 = f64::from(FALL_OFFSCREEN);
-        self.acceleration.1 = -15.0;
+        self.acceleration.1 = get_random_acceleration();
     }
 }
 
@@ -48,6 +49,10 @@ fn get_random_upto(max: u32) -> u32 {
     u32::from(value)
 }
 
+fn get_random_acceleration() -> f64 {
+    MAX_ACCELERATION + f64::from(get_random_upto((MAX_ACCELERATION / -2.0) as u32))
+}
+
 impl Default for Ball {
     fn default() -> Ball {
         Ball {
@@ -56,7 +61,7 @@ impl Default for Ball {
                 f64::from(FALL_OFFSCREEN),
             ),
             radius: BALL_RADIUS,
-            acceleration: (0.0, -15.0),
+            acceleration: (0.0, get_random_acceleration()),
             color_str: format!(
                 "rgb({},{},{})",
                 get_random_upto(std::u8::MAX as u32),
