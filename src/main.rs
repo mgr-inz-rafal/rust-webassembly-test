@@ -24,7 +24,7 @@ struct Ball {
 impl Ball {
     fn tick(&mut self) -> bool {
         self.pos.1 += self.acceleration.1;
-        //        js! { console.log( "Updating ball pos to: ", @{self.pos.1} ) }
+        //        js! { console.log( "Updating ball pos to: ", @{self.pos.0} ) }
 
         self.acceleration.1 += GRAVITY_DRAG;
 
@@ -41,24 +41,27 @@ impl Ball {
     }
 }
 
-fn get_random_u8() -> u8 {
-    let value: u8 = js! { return Math.floor(Math.random() * @{std::u8::MAX}) }
+fn get_random_upto(max: u32) -> u32 {
+    let value: u32 = js! { return Math.floor(Math.random() * @{max}) }
         .try_into()
         .unwrap();
-    u8::from(value)
+    u32::from(value)
 }
 
 impl Default for Ball {
     fn default() -> Ball {
         Ball {
-            pos: (f64::from(SCREEN_WIDTH / 2), f64::from(FALL_OFFSCREEN)),
+            pos: (
+                f64::from(get_random_upto(SCREEN_WIDTH)),
+                f64::from(FALL_OFFSCREEN),
+            ),
             radius: BALL_RADIUS,
             acceleration: (0.0, -15.0),
             color_str: format!(
                 "rgb({},{},{})",
-                get_random_u8(),
-                get_random_u8(),
-                get_random_u8()
+                get_random_upto(std::u8::MAX as u32),
+                get_random_upto(std::u8::MAX as u32),
+                get_random_upto(std::u8::MAX as u32)
             ),
         }
     }
@@ -115,12 +118,7 @@ impl View {
 fn main() {
     stdweb::initialize();
 
-    let mut balls = vec![Ball::default(), Ball::default()];
-
-    balls[0].pos = (
-        f64::from(SCREEN_WIDTH / 2) - 100.0,
-        f64::from(FALL_OFFSCREEN),
-    );
+    let balls = vec![Ball::default(), Ball::default()];
 
     fn game_loop(mut balls: Vec<Ball>, view: View) {
         stdweb::web::set_timeout(
@@ -140,7 +138,7 @@ fn main() {
         );
     }
 
-    let v = View::new(SCREEN_HEIGHT, SCREEN_WIDTH);
+    let v = View::new(SCREEN_HEIGHT << 1, SCREEN_WIDTH); // TODO: Using just "SCREEN_HEIGHT" didn't clean full canvas...
 
     game_loop(balls, v);
 
