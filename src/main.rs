@@ -115,13 +115,14 @@ impl View {
 fn main() {
     stdweb::initialize();
 
-    let mut ball: [Ball; 2] = [Ball::default(), Ball::default()];
-    ball[0].pos = (
+    let mut balls = vec![Ball::default(), Ball::default()];
+
+    balls[0].pos = (
         f64::from(SCREEN_WIDTH / 2) - 100.0,
         f64::from(FALL_OFFSCREEN),
     );
 
-    fn game_loop(mut balls: [Ball; 2], view: View) {
+    fn game_loop(mut balls: Vec<Ball>, view: View) {
         stdweb::web::set_timeout(
             move || {
                 for ball in &mut balls {
@@ -141,7 +142,7 @@ fn main() {
 
     let v = View::new(SCREEN_HEIGHT, SCREEN_WIDTH);
 
-    game_loop(ball, v);
+    game_loop(balls, v);
 
     stdweb::event_loop();
 }
