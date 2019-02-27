@@ -15,7 +15,6 @@ const SCREEN_HEIGHT: u32 = 600;
 const GRAVITY_DRAG: f64 = 0.2;
 const BALL_RADIUS_MIN: u32 = 10;
 const BALL_RADIUS_MAX: u32 = 90;
-const FALL_OFFSCREEN: u32 = SCREEN_HEIGHT + BALL_RADIUS_MAX;
 const MAX_ACCELERATION: f64 = -15.0;
 
 struct Ball {
@@ -32,7 +31,7 @@ impl Ball {
 
         self.acceleration.1 += GRAVITY_DRAG;
 
-        if self.pos.1 > f64::from(FALL_OFFSCREEN) {
+        if self.pos.1 > f64::from(SCREEN_HEIGHT - self.radius) {
             true
         } else {
             false
@@ -40,7 +39,6 @@ impl Ball {
     }
 
     fn reset(&mut self) {
-        self.pos.1 = f64::from(FALL_OFFSCREEN);
         self.acceleration.1 = get_random_acceleration();
     }
 }
@@ -65,7 +63,7 @@ impl Default for Ball {
         Ball {
             pos: (
                 f64::from(get_random_upto(SCREEN_WIDTH)),
-                f64::from(FALL_OFFSCREEN),
+                f64::from(SCREEN_HEIGHT),
             ),
             radius: get_random_radius(),
             acceleration: (0.0, get_random_acceleration()),
