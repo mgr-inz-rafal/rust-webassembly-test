@@ -8,6 +8,8 @@ use stdweb::web::document;
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::CanvasRenderingContext2d;
 
+const BALL_COUNT: usize = 8;
+
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 const GRAVITY_DRAG: f64 = 0.2;
@@ -50,7 +52,7 @@ fn get_random_upto(max: u32) -> u32 {
 }
 
 fn get_random_acceleration() -> f64 {
-    MAX_ACCELERATION + f64::from(get_random_upto((MAX_ACCELERATION / -2.0) as u32))
+    MAX_ACCELERATION + f64::from(get_random_upto((MAX_ACCELERATION / -1.7) as u32))
 }
 
 impl Default for Ball {
@@ -123,7 +125,8 @@ impl View {
 fn main() {
     stdweb::initialize();
 
-    let balls = vec![Ball::default(), Ball::default()];
+    let mut balls = Vec::new();
+    balls.resize_with(BALL_COUNT, Default::default);
 
     fn game_loop(mut balls: Vec<Ball>, view: View) {
         stdweb::web::set_timeout(
