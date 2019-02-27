@@ -128,15 +128,14 @@ fn main() {
     fn game_loop(mut balls: Vec<Ball>, view: View) {
         stdweb::web::set_timeout(
             move || {
+                view.clear();
                 for ball in &mut balls {
                     if ball.tick() == true {
                         js! { console.log( "Bounce!" ) }
                         ball.reset();
                     }
+                    view.paint(ball);
                 }
-                view.clear();
-                view.paint(&balls[0]);
-                view.paint(&balls[1]);
                 game_loop(balls, view);
             },
             16,
